@@ -1,16 +1,16 @@
-import express from 'express';
-import { Application, Request, Response } from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import connectDB from './config/db';
-import { errorHandler, notFound } from './middlewares/errorMiddleware';
+import express from "express";
+import { Application, Request, Response } from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import connectDB from "./config/db";
+import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 
 // Routes
-import roomRoutes from './routes/roomRoutes';
-import userRoutes from './routes/userRoutes';
-import bookingRoutes from './routes/bookingRoutes';
-import uploadRoutes from './routes/uploadRoutes';
+import roomRoutes from "./routes/roomRoutes";
+import userRoutes from "./routes/userRoutes";
+import bookingRoutes from "./routes/bookingRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 const app: Application = express();
 
@@ -21,12 +21,28 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// Default 
-app.get("/api", (req: Request, res: Response)  => {
+// // Default
+// app.get("/api", (req: Request, res: Response) => {
+//   res.status(201).json({ message: "Welcome to Hotel Booking App" });
+// });
+
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use("/uploads", express.static("/var/data/uploads"));
+  app.use(express.static(path.join(__dirname, "/frontend/build")));
+
+  app.get("*", (req: Request, res: Response) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
+  );
+} else {
+  const __dirname = path.resolve();
+  app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+  app.get("/api", (req: Request, res: Response) => {
     res.status(201).json({ message: "Welcome to Hotel Booking App" });
-})
+  });
+}
 
 // Room Route
 app.use("/api/rooms", roomRoutes);
