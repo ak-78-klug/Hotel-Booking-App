@@ -5,7 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "server": "ts-node-dev backend/server.ts",
-    "client": "npm start --prefix frontend"
+    "client": "npm start --prefix frontend",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "Asif",
